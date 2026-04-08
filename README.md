@@ -12,7 +12,7 @@ This library implements a full pricing stack for credit derivatives, from market
 
 - **Yield curve construction** from deposits, Eurodollar futures (with convexity adjustment), and vanilla IRS, bootstrapped via Brent's method
 - **Credit curve bootstrapping** from CDS par spreads, using Newton-Raphson with analytical Jacobian
-- **CDS pricing** — par spread, risky PV01, NPV, upfront — with support for mid-life valuation
+- **CDS pricing**  par spread, risky PV01, NPV, upfront  with support for mid-life valuation
 - **Python bindings** exposing the full C++ API via pybind11
 
 The architecture enforces a strict separation between market data, instruments, numerical solvers, and pricing engines.
@@ -47,55 +47,6 @@ CDS and IndexTranches Pricing/
 ├── main.cpp                    # C++ demo: yield curve + credit curve + CDS pricing
 └── CMakeLists.txt              # Top-level build config (C++ exe + optional Python module)
 ```
-
----
-
-## Mathematical Framework
-
-### Yield Curve
-
-The discount curve is built sequentially from:
-
-- **Deposits** — direct discount factor: $D(0, T) = \frac{1}{1 + r \cdot \tau}$
-- **Eurodollar futures** — convexity-adjusted FRA rates, NPV solved to zero via Brent
-- **Swaps** — last pillar bootstrapped by zeroing the fixed vs floating NPV via Brent
-
-Log-linear interpolation on discount factors between pillars.
-
-### Credit Curve
-
-Piecewise-constant hazard rate model. Survival probability over $[0, T_n]$:
-
-$$Q(0, T_n) = \exp\!\left(-\sum_{i=1}^{n} \lambda_i \, \Delta t_i\right)$$
-
-Hazard rates $\lambda_i$ are extracted sequentially from quoted CDS par spreads. At each tenor $T_n$, Newton-Raphson solves:
-
-$$F(\lambda_n) = s_n^{\text{market}} - s_n^{\text{model}}(\lambda_n) = 0$$
-
-using the analytical derivative $\partial s / \partial \lambda_n$ (`spread_and_dspread`), giving single-pass $O(N)$ complexity over the pillar set.
-
-### CDS Pricing
-
-**Default leg** (trapezoidal approximation):
-
-$$PV_{\text{def}} = (1 - R) \sum_{i} \frac{D(t_{i-1}) + D(t_i)}{2} \left[Q(t_{i-1}) - Q(t_i)\right]$$
-
-**Risky PV01** (premium leg, ACT/360 accrual, with accrued-on-default term):
-
-$$\text{RPV01} = \sum_{n} \tau_n \cdot D(T_n) \cdot \frac{Q(T_{n-1}) + Q(T_n)}{2}$$
-
-**Par spread:**
-
-$$s^* = \frac{PV_{\text{def}}}{\text{RPV01}}$$
-
-**Upfront** (ISDA-style, protection buyer convention):
-
-$$\text{Upfront} = (s^{\text{contractual}} - s^*) \times \text{RPV01} \times N$$
-
-Both `rpv01` and `default_leg` support mid-life valuation (valuation date $\neq$ effective date), with correct stub period handling via `std::ranges::upper_bound` on the payment schedule.
-
----
-
 ## Build
 
 ### Requirements
@@ -223,41 +174,7 @@ print(f"Upfront    : {pricer.upfront():.6f}")
 
 > **Important — object lifetimes (Python):** `YieldCurve` and `CreditCurve` are returned as internal references from their respective bootstrappers. The bootstrapper objects (`boot`, `cc_boot`) must remain alive as long as any curve or pricer that depends on them is in use.
 
----
-
-## Sample Output
-
-```
-=== Yield Curve ===
-t            DF
--------------------------------
-0.25       0.990099
-0.50       0.980296
-1.00       0.961169
-...
-
-=== Credit Curve ===
-t          Q(t)       PD (%)
-----------------------------------------
-1.0      0.991706        0.83
-3.0      0.970835        2.92
-5.0      0.939048        6.10
-10.0     0.858649       14.14
-
-=== Repricing Check ===
-Maturity     Quoted (bp)  Repriced (bp)
-----------------------------------------
-1.0             50.00          50.00
-5.0            130.00         130.00
-
-=== CDS Pricer ===
-Par spread (bp)          130.0000
-RPV01                  45231.82
-NPV                        0.00
-Upfront               150000.00
-```
-
----
+--
 
 ## Roadmap
 
