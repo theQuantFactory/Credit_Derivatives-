@@ -1,6 +1,6 @@
 # CDS & Index Tranches Pricing
 
-> A professional-grade C++20 library for pricing and risk management of single-name CDS and index tranche products, with Python bindings via pybind11.
+> A professional grade C++20 library for pricing and risk management of single-name CDS and index tranche products, with Python bindings via pybind11.
 
 
 
@@ -288,5 +288,3 @@ Upfront               150000.00
 ## References
 
 - O'Kane, D. (2008). *Modelling Single-name and Multi-name Credit Derivatives.* Wiley.
-- ISDA (2009). *Standard CDS Contract Specifications.*
-- Hull, J. (2018). *Options, Futures, and Other Derivatives*, 10th ed. Pearson.
