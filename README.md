@@ -76,8 +76,6 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release \
       -Dpybind11_DIR=$(python3 -m pybind11 --cmakedir)
 cmake --build build
 
-# On Linux/macOS: build/cds_pricer.so
-# On Windows:     build/cds_pricer.cp312-win_amd64.pyd
 ```
 
 ---
