@@ -1,6 +1,6 @@
 # CDS & Index Tranches Pricing
 
-> A professional grade C++20 library for pricing and risk management of single-name CDS and index tranche products, with Python bindings via pybind11.
+> A  C++20 library for pricing and risk management of single-name CDS and index tranche products, with Python bindings via pybind11.
 
 
 
@@ -174,29 +174,13 @@ print(f"Upfront    : {pricer.upfront():.6f}")
 
 --
 
-## Roadmap
-
-| Status | Feature |
-|--------|---------|
-| ✅ | Yield curve bootstrapper — deposits, futures (convexity adj.), IRS (Brent) |
-| ✅ | Credit curve bootstrapper — Newton-Raphson with analytical Jacobian |
-| ✅ | CDS pricer — par spread, RPV01, NPV, upfront, mid-life valuation |
-| ✅ | Python bindings (pybind11) |
-| 📋 | CS01 / IR DV01 via central finite differences |
-| 📋 | Index CDS (CDX / iTraxx) intrinsic pricing |
-| 📋 | Tranche pricing (Gaussian copula, base correlation) |
-| 📋 | CVA on single-name CDS |
-
----
-
 ## Design Notes
 
 - **No external dependencies** beyond the STL and pybind11 (for the Python module).
 - **No polymorphism** unless architecturally necessary — concrete types and templates throughout.
 - **`Core::Date`** uses Julian day arithmetic as its internal representation; all date differences and year fractions are computed directly from Julian day integers.
 - **Solvers are stateless value types** — `NewtonRaphson` and `Brent` take callables via templates, with no heap allocation.
-- **`friend class CreditBoot`** grants the bootstrapper direct write access to `CreditCurve::intensity` without exposing mutation publicly.
-- **`YieldCurveBoot::solve_df`** uses `pop_pillar` to implement a try/reject pattern inside Brent without cloning the curve.
+=- **`YieldCurveBoot::solve_df`** uses `pop_pillar` to implement a try/reject pattern inside Brent without cloning the curve.
 
 ---
 
