@@ -174,7 +174,7 @@ namespace Pricer {
                 prev = x;
                 f_prev = fx;
             }
-            throw std::runtime_error("BaseCorrBootstraper : not finding the root , check market data") ;
+            throw std::runtime_error("BaseCorrBootstraper : not finding the root , check market data or use another model") ;
         }
 
     };

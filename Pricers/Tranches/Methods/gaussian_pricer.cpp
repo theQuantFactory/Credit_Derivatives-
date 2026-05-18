@@ -3,8 +3,44 @@
 //
 
 #include "gaussian_pricer.h"
+#include <cmath>
+#include <stdexcept>
 
 namespace Pricer {
+
+
+    GaussianPricer::GaussianPricer(
+        const std::vector<Market::CreditCurve> & credit_curves,
+        const int n_credits,
+        const std::vector<double> & recovery_rates
+    ) :
+        m_credit_curves(credit_curves),
+        m_recovery_rates(recovery_rates),
+        m_credits(n_credits)
+    {
+
+        if (n_credits <= 0)
+            throw std::invalid_argument("GaussianPricer: n_credits must be > 0");
+
+        if (static_cast<int>(credit_curves.size()) != n_credits)
+            throw std::invalid_argument(
+                "GaussianPricer: credit_curves.size() != n_credits"
+            );
+
+        if (static_cast<int>(recovery_rates.size()) != n_credits)
+            throw std::invalid_argument(
+                "GaussianPricer: recovery_rates.size() != n_credits"
+            );
+
+        for (std::size_t i = 0; i < recovery_rates.size(); ++i) {
+            if (recovery_rates[i] < 0.0 || recovery_rates[i] > 1.0)
+                throw std::invalid_argument(
+                    "GaussianPricer: recovery_rates[" + std::to_string(i)
+                    + "] must be in [0, 1]"
+                );
+        }
+    }
+
     std::vector<double> GaussianPricer::default_probability(const std::vector<Market::CreditCurve> &curves, const double t, const double Z, const double rho) const {
 
         const auto n = static_cast<std::size_t>(m_credits);
@@ -16,7 +52,8 @@ namespace Pricer {
             if (p_i <= 1e-12)      { default_prob.push_back(0.0); continue; }
             if (p_i >= 1.0-1e-12)  { default_prob.push_back(1.0); continue; }
             const double C_t = Core::norm_inv(p_i);
-            default_prob.push_back(Core::norm_cdf(( C_t - std::sqrt(rho) * Z) / sqrt(1 - rho)) ) ;
+            const double sqrt_1_minus_rho = std::sqrt(1.0 - rho);  // FIX: P1 - std::sqrt
+            default_prob.push_back(Core::norm_cdf(( C_t - std::sqrt(rho) * Z) / sqrt_1_minus_rho)) ;
         }
         return default_prob ;
     }
@@ -32,7 +69,7 @@ namespace Pricer {
         }
         mean /= static_cast<double>(n);
         variance /= (static_cast<double>(n) * static_cast<double>(n));
-        return {mean, sqrt (std::max(variance , 0.0) ) } ;
+        return {mean, std::sqrt(std::max(variance , 0.0)) } ;
 
     }
 
@@ -40,6 +77,10 @@ namespace Pricer {
     double GaussianPricer::expected_min_loss(const double K, const double t, const double rho) const {
         if (K <= 0)
             return 0.0 ;
+
+
+        if (rho < 0.0 || rho > 1.0)
+            throw std::invalid_argument("GaussianPricer::expected_min_loss: rho must be in [0, 1]");
 
         double E_min = 0.0 ;
         constexpr auto GH_number = static_cast<std::size_t>(Core::N_GH) ;

@@ -121,4 +121,15 @@ Date Date::add_months(const double n_months) const
     return result;
 }
 
+    std::string Date::to_string() const {
+    auto [y, m, d] = fromJDN(m_jdn);
+
+    std::ostringstream oss;
+    oss << std::setfill('0')
+        << std::setw(4) << y << "-"
+        << std::setw(2) << m << "-"
+        << std::setw(2) << d;
+    return oss.str();
+}
+
 }

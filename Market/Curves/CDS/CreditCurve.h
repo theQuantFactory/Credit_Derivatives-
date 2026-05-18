@@ -25,7 +25,7 @@ namespace  Market {
 
         [[nodiscard]] double survival_probability(double t) const;
         [[nodiscard]] double survival_probability(double t, double T) const;
-
+        std::vector<Core::Point> hazard_rates() const ;
 
 
     private :

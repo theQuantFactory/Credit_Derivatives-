@@ -145,4 +145,8 @@ namespace Market {
         }
     }
 
+     std::vector<Core::Point> CreditCurve::hazard_rates() const {
+        return intensity;
+     }
+
 }

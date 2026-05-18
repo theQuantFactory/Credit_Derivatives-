@@ -12,7 +12,7 @@ namespace Market {
 
         if (rho < 0.0 || rho > 1.0)
             throw std::invalid_argument("rho should be between 0 and 1.");
-        auto it = std::lower_bound( m_rhos_curve.begin(), m_rhos_curve.end(), K ,
+        const auto it = std::lower_bound( m_rhos_curve.begin(), m_rhos_curve.end(), K ,
             [](const BaseCorrPoint & p , const double val ) {return p.K  < val;});
         m_rhos_curve.insert(it, {K,rho});
     }

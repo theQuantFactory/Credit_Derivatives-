@@ -20,7 +20,7 @@ namespace Pricer {
         if (rho < 1e-10) return std::min(lgd * p_t, K);
 
         if (rho > 1.0 - 1e-10)
-            return K * p_t;
+                return std::min(lgd, K) * p_t;
 
         const double C_t  = Core::norm_inv(p_t);
         const double beta = std::sqrt(rho);

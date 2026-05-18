@@ -32,6 +32,8 @@ namespace Pricer {
         [[nodiscard]] double npv()         const;
         [[nodiscard]] double npv(double actual_spread) const;
 
+        [[nodiscard]] double default_leg(Core::Date valuation_date) const;
+
         [[nodiscard]] double upfront()     const;
         [[nodiscard]] double upfront(double actual_spread) const ;
 
@@ -42,7 +44,7 @@ namespace Pricer {
         const Market::CreditCurve& m_credit_curve;
         Market::CDS::CDSGrids m_grid;
 
-        [[nodiscard]] double default_leg(Core::Date valuation_date) const;
+
 
 
 

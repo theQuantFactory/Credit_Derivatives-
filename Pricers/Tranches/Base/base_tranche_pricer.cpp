@@ -41,6 +41,10 @@ namespace Pricer {
             Q_prev = Q_i ;
         }
 
+        if (tranche.quoted_upfront) {
+            return tranche.upfront + tranche.contractual_spread * 0.5 * pv * tranche.nominal;
+        }
+
         return tranche.fair_spread * 0.5 * pv * tranche.nominal;
     }
 
@@ -101,7 +105,6 @@ namespace Pricer {
 
         return default_leg / risk_premium ;
     }
-
 
     }
 

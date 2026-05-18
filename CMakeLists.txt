@@ -52,6 +52,8 @@ add_executable(CDS
         Risk/CDS/risk_engine.h
         Risk/CDS/bumper.h
         Market/Curves/CDS/CreditCurve.cpp
+        interface.cpp
+        interface.h
 )
 
 # PROJECT_SOURCE_DIR = dossier contenant ce CMakeLists.txt

@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include <string>
 #include <tuple>
 
 namespace Core {
@@ -36,7 +37,8 @@ class Date {
     static bool                    isLeapYear (int year);
     static int                     daysInMonth(int month, int year);
 
-    // Legacy alias for existing test code
+    std::string to_string() const;
+
     static std::tuple<int,int,int> fromJulian(const long long jdn) { return fromJDN(jdn); }
 
 private:
